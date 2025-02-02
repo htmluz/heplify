@@ -85,6 +85,7 @@ type stats struct {
 	ip4Count      uint64
 	ip6Count      uint64
 	rtcpCount     uint64
+	rtpCount      uint64
 	rtcpFailCount uint64
 	tcpCount      uint64
 	hepCount      uint64
@@ -930,7 +931,26 @@ func (d *Decoder) processTransport(foundLayerTypes *[]gopacket.LayerType, udp *l
 						return
 					} else if udp.SrcPort%2 == 0 && udp.DstPort%2 == 0 {
 						if config.Cfg.Mode == "SIPRTP" {
-							logp.Debug("rtp", "\n%v", protos.NewRTP(udp.Payload))
+							rtpPacket, err := protos.NewRTP(udp.Payload)
+							if err != nil {
+								logp.Debug("rtp", "Failed to parse RTP: %v", err)
+								return
+							}
+							logp.Debug("rtp", "\n%v", rtpPacket.String())
+							pkt.Payload = rtpPacket.Contents
+							pkt.ProtoType = 7
+
+							//Correlating the same way I correlated rtcp w/o cid
+							//build a correlateRTP later and maybe a better correlate w/o cid
+							//srcIp   port
+							//1.2.3.4 3721
+							srcIPString := pkt.SrcIP.String()
+							srcPortString := strconv.Itoa(int(pkt.SrcPort))
+							pkt.CID = []byte(srcIPString + " " + srcPortString)
+
+							atomic.AddUint64(&d.rtpCount, 1)
+							PacketQueue <- pkt
+							return
 						}
 						pkt.Payload = nil
 						return

@@ -325,11 +325,14 @@ func correlateRTCP(srcIP net.IP, srcPort uint16, dstIP net.IP, dstPort uint16, p
 	}
 
 	if logp.HasSelector("rtcp") {
-		logp.Debug("rtcp", "No correlationID for srcIP=%v, srcPort=%v, dstIP=%v, dstPort=%v",
-			srcIP, srcPort, dstIP, dstPort)
+		logp.Debug("rtcp", "No correlationID for srcIP=%v, srcPort=%v, dstIP=%v, dstPort=%v, rtcpKey=%v",
+			srcIP, srcPort, dstIP, dstPort, rtcpKey)
 	}
 	// Nothing found so return failure.
-	return nil, nil
+	// returning this so i can correlate later on the server.
+	// can move the entire correlation to the server for my case.
+	logp.Debug("rtcp", "srckey: %s", string(srcKey))
+	return jsonRTCP, srcKey
 }
 
 func correlateLOG(payload []byte) (byte, []byte) {

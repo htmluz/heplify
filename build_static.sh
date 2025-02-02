@@ -12,10 +12,10 @@
 set -ex
 
 apk update
-apk add linux-headers musl-dev gcc libpcap-dev ca-certificates git
+apk add linux-headers musl-dev gcc libpcap-dev ca-certificates git luajit-dev
 
 cd /mnt
 rm -f heplify*
-go build --ldflags '-linkmode external -extldflags "-static -s -w"' -v ./
+go build --ldflags '-linkmode external -extldflags "-static -s -w"' -buildvcs=false -v ./
 ./heplify -rf example/pcap/rtp_rtcp_sip_ipv4_udp.pcap -rs -e -hs ""
 cp ./heplify /mnt/out/

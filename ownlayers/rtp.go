@@ -33,7 +33,7 @@ type RTP struct {
 // String returns a string version of RTP.
 func (r *RTP) String() string {
 	return fmt.Sprintf(
-		"Version:\t%d\nPadding:\t%d\nExtension:\t%d\nCC:\t\t%d\nMarker:\t\t%d\nPayloadType:\t%d\nSequenceNum:\t%d\nTimestamp:\t%d\nSsrc:\t\t0x%x\nPayload:\t0x%x\n",
+		"Version:\t%d\nPadding:\t%d\nExtension:\t%d\nCC:\t\t%d\nMarker:\t\t%d\nPayloadType:\t%d\nSequenceNum:\t%d\nTimestamp:\t%d\nSsrc:\t\t0x%x\nPayload:\t0x%x\nContent:\t0x%x\n",
 		r.Version,
 		r.Padding,
 		r.Extension,
@@ -44,6 +44,7 @@ func (r *RTP) String() string {
 		r.Timestamp,
 		r.Ssrc,
 		r.Payload,
+		r.Contents,
 	)
 }
 
@@ -75,7 +76,7 @@ func (r *RTP) LayerPayload() []byte {
 	return nil
 }
 
-//DecodeFromBytes decodes the given bytes into this layer.
+// DecodeFromBytes decodes the given bytes into this layer.
 func (r *RTP) DecodeFromBytes(data []byte, df gopacket.DecodeFeedback) error {
 	if len(data) < 12 {
 		return errors.New("the RTP header should have at least 12 octets")
