@@ -929,7 +929,7 @@ func (d *Decoder) processTransport(foundLayerTypes *[]gopacket.LayerType, udp *l
 						}
 						atomic.AddUint64(&d.rtcpFailCount, 1)
 						return
-					} else if udp.SrcPort%2 == 0 && udp.DstPort%2 == 0 {
+					} else if len(udp.Payload) > 0 && udp.Payload[0] == 0x80 && udp.SrcPort%2 == 0 && udp.DstPort%2 == 0 {
 						if config.Cfg.Mode == "SIPRTP" {
 							rtpPacket, err := protos.NewRTP(udp.Payload)
 							if err != nil {
