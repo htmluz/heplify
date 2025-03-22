@@ -28,7 +28,9 @@ import (
 )
 
 var (
-	PacketQueue = make(chan *Packet, 20000)
+	PacketQueue  = make(chan *Packet, 20000)
+	PacketQueue2 = make(chan *Packet, 40000) //RTP
+	//^^^^^^^^^^ dunno if its the best option but separating it im getting better results so
 	scriptCache = fastcache.New(32 * 1024 * 1024)
 )
 
@@ -949,7 +951,7 @@ func (d *Decoder) processTransport(foundLayerTypes *[]gopacket.LayerType, udp *l
 							pkt.CID = []byte(srcIPString + " " + srcPortString)
 
 							atomic.AddUint64(&d.rtpCount, 1)
-							PacketQueue <- pkt
+							PacketQueue2 <- pkt
 							return
 						}
 						pkt.Payload = nil

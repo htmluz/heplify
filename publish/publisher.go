@@ -39,7 +39,11 @@ func NewPublisher(out Outputer) *Publisher {
 		}
 	}
 
-	go p.Start(decoder.PacketQueue)
+	if config.Cfg.Mode == "SIPRTP" {
+		go p.Start(decoder.PacketQueue2)
+	} else {
+		go p.Start(decoder.PacketQueue)
+	}
 	go p.printStats()
 	return p
 }
